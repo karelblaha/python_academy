@@ -7,6 +7,7 @@ email: karel.blaha@gmail.com
 
 ### tady bude začínat tvůj kód
 import sys
+import re
 
 TEXTS = [
     '''Situated about 10 miles west of Kemmerer,
@@ -54,24 +55,28 @@ print("-"*40, "\nWelcome to the app, ", username,
 print("-"*40)
 i = int(input("Enter a number btw. 1 and 3 to select: "))
 
-if i not in range (1,3):
+if i not in range (1,4):
   print("unavailable value, terminating the program...")
   sys.exit()
 
 print("-"*40)
 
-words = TEXTS[i-1].split()
+words = re.sub(r'[^\w\s]', '', TEXTS[i-1]).split()
 words_count = len(words)
 words_title = 0
 words_upper = 0
 words_lower = 0
 words_numeric = 0
 words_numeric_sum = 0
-words_lengths = []
-word_ocurrencces = {}
+word_occurrences = {}
 
 for word in words:
-  words_lengths.append(len(word.replace(',','').replace('.','')))
+  k = len(word)
+  if type(word_occurrences.get(k)) == type(None):
+    word_occurrences.update({k:1})
+  else:
+    word_occurrences.update({k:word_occurrences.get(k)+1}) 
+  
   if word.istitle():
     words_title += 1
   if word.isupper():
@@ -92,12 +97,6 @@ print("-"*40)
 print("LEN  |  OCCURRENCES            |  NR.")
 print("-"*40)
 
-for x in range (1, max(words_lengths)+1):
-  word_ocurrencces.update({x:0})
-
-for w in words_lengths:
-  word_ocurrencces.update({w:(word_ocurrencces.get(w)+1)})
-
-for key in word_ocurrencces.keys():
-  print(" "*(2-len(str(key))), key, " | ", "*"*word_ocurrencces.get(key),
-        " "*(20-word_ocurrencces.get(key)), " | ", word_ocurrencces.get(key))
+for key in sorted(word_occurrences.keys()):
+  print(" "*(2-len(str(key))), key, " | ", "*"*word_occurrences.get(key),
+        " "*(20-word_occurrences.get(key)), " | ", word_occurrences.get(key))
